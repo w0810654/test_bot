@@ -229,20 +229,26 @@ body{{font-family:'Inter',sans-serif;background:white;margin:0;padding:0}}
        style="width:100%;height:auto;display:block;max-width:100%"
        onerror="this.style.display='none'">
 </div>
-<div class="max-w-4xl p-4">
-  <h1 class="section-title mb-2">Transaction Details:-</h1>
-  <div class="border-thin mb-4"></div>
-  <div class="space-y-3 mb-6">
-    <div><span class="font-semibold">Date:</span> {fmt_date_uba(tx)}</div>
-    <div><span class="font-semibold">Time:</span> {fmt_time_hms(tx)}</div>
-    <div><span class="font-semibold">Reference:</span> {rand_ref_S()}</div>
-    <div><span class="font-semibold">Amount:</span> {fmt_ngn_full(amount)}</div>
-    <div><span class="font-semibold">Status:</span> SUCCESSFUL</div>
-    <div><span class="font-semibold">Type:</span> Credit</div>
+<div class="max-w-4xl p-4" style="position:relative">
+  <img src="https://i.ibb.co/1f3RKwzD/trba.png"
+       alt=""
+       style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:85%;max-width:520px;height:auto;opacity:0.15;z-index:0;pointer-events:none"
+       onerror="this.style.display='none'">
+  <div style="position:relative;z-index:1">
+    <h1 class="section-title mb-2">Transaction Details:-</h1>
+    <div class="border-thin mb-4"></div>
+    <div class="space-y-3 mb-6">
+      <div><span class="font-semibold">Date:</span> {fmt_date_uba(tx)}</div>
+      <div><span class="font-semibold">Time:</span> {fmt_time_hms(tx)}</div>
+      <div><span class="font-semibold">Reference:</span> {rand_ref_S()}</div>
+      <div><span class="font-semibold">Amount:</span> {fmt_ngn_full(amount)}</div>
+      <div><span class="font-semibold">Status:</span> SUCCESSFUL</div>
+      <div><span class="font-semibold">Type:</span> Credit</div>
+    </div>
+    <h2 class="section-title mb-2">Accounts Details:-</h2>
+    <div class="border-thin mb-4"></div>
+    <div><span class="font-semibold">Narration:</span> Transfer from DAIMORAX</div>
   </div>
-  <h2 class="section-title mb-2">Accounts Details:-</h2>
-  <div class="border-thin mb-4"></div>
-  <div><span class="font-semibold">Narration:</span> TNF-DaimoraX/Transfer/ To {receiver}</div>
 </div>
 </body></html>"""
 
@@ -279,7 +285,7 @@ body{{font-family:'Inter',sans-serif}}
   </div>
   <h2 class="section-title mb-2">Accounts Details:-</h2>
   <div class="border-thin mb-4"></div>
-  <div><span class="font-semibold">Narration:</span> TNF-DaimoraX/Transfer/ To {receiver}</div>
+  <div><span class="font-semibold">Narration:</span> Transfer from DAIMORAX</div>
 </div>
 <div style="width:100%;line-height:0">
   <img src="https://i.ibb.co/Pvmp72tz/photo-2025-10-05-21-15-20.jpg"
@@ -485,6 +491,7 @@ DAIMORAX_BANKS = {
     "UBA Modern":  ("United Bank for Africa", None),
     "Kuda":        ("Kuda Microfinance Bank", None),
     "Sparkle":     ("Sparkle", None),
+    "Access Bank": ("Access Bank", None),
 }
 
 # NGN value of 1 DAI, applied to the gross amount (gross / rate = DAI).
@@ -774,8 +781,82 @@ def tpl_sparkle(receiver: str, amount: int, tx: datetime) -> str:
 </html>"""
 
 
+# ── Access Bank ───────────────────────────────────────────────────────────────
+def tpl_access_bank(receiver: str, amount: int, tx: datetime) -> str:
+    months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    date_str = f"{months[tx.month-1]} {tx.day}, {tx.year}"
+    reference = "".join(random.choices("0123456789", k=30))
+    narration = f"DaimoraX to {receiver.upper()}:{reference}"
+    theme = random.choice(["orange", "green", "blue"])
+    
+    # Theme colors
+    colors = {
+        "orange": {"header": "#f7941d", "accent": "#f7941d", "icon": "https://i.postimg.cc/XqgVPQkH/ACCESSICON.jpg", "bottom": "https://i.postimg.cc/HxxjbG0p/ACCESSB-UTTOM.jpg"},
+        "green": {"header": "#97b517", "accent": "#97b517", "icon": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Green%20Icon-NLJgYEjjReT5r1vNzfe7T6UwF3U2LW.jpg", "bottom": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Green%20Bottom-SQlB4sxXWK6OILsYyl5uW1cdF67eEa.jpg"},
+        "blue": {"header": "#3b5998", "accent": "#3b5998", "icon": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Blue%20Icon-NALvbaR35w5Uv1f9R0kXiUpFgiqrJ5.jpg", "bottom": "https://i.ibb.co/G3p0bphM/aef36c1e-2af9-45bd-ab6e-a2e593924348.jpg"},
+    }
+    c = colors[theme]
+    
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Access Bank</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: 'Nunito Sans', sans-serif; background: #f5f5f5; }}
+        .divider {{ height: 1px; background-color: #e5e5e5; }}
+        .header-top {{ background-color: {c['header']}; padding: 12px 24px; display: flex; align-items: center; }}
+        .header-top svg {{ width: 24px; height: 24px; stroke: white; }}
+    </style>
+</head>
+<body>
+<div style="max-width: 430px; margin: 0 auto; height: 100vh; overflow: hidden; display: flex; flex-direction: column; background: white;">
+    <!-- MAIN HEADER (with back arrow) -->
+    <div style="background-color: {c['header']}; padding: 40px 24px 28px 24px; flex-shrink: 0; text-align: center; position: relative;">
+        <button style="position: absolute; left: 20px; top: 40px; background: none; border: none; cursor: pointer; padding: 0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <p style="color: white; font-size: 16px; font-weight: 600; margin-bottom: 22px;">{date_str}</p>
+        <div style="margin-bottom: 10px;">
+            <img src="{c['icon']}" alt="Transaction Icon" style="width: 80px; height: 80px; border-radius: 16px; object-fit: cover; display: inline-block;">
+        </div>
+        <p style="color: rgba(255,255,255,0.75); font-size: 13px; font-weight: 500; margin-bottom: 6px;">Others</p>
+        <p style="color: white; font-size: 20px; letter-spacing: 0.9px; font-weight: 600;">₦{fmt_ngn(amount)}</p>
+    </div>
+    <div style="height: 5px; background-color: #f2f3ef; flex-shrink: 0;"></div>
+    <!-- TRANSACTION DETAILS -->
+    <div style="background-color: #ffffff; padding: 0 24px; flex-shrink: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 0;">
+            <span style="font-size: 14px; color: #444; font-weight: 400;">To</span>
+            <span style="font-size: 14px; color: {c['accent']}; font-weight: 700;">{receiver.upper()}</span>
+        </div>
+        <div class="divider"></div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 18px 0;">
+            <span style="font-size: 14px; color: #444; font-weight: 400; margin-right: 20px;">Narration</span>
+            <span style="font-size: 14px; color: {c['accent']}; font-weight: 700; text-align: right; line-height: 1.55; max-width: 65%; word-wrap: break-word;">{narration}</span>
+        </div>
+        <div class="divider"></div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 18px 0; margin-bottom: 12px;">
+            <span style="font-size: 14px; color: #444; font-weight: 400; margin-right: 20px;">Reference</span>
+            <span style="font-size: 14px; color: {c['accent']}; font-weight: 700; text-align: right; line-height: 1.55; max-width: 65%; word-wrap: break-word;">{reference}</span>
+        </div>
+    </div>
+    <!-- BOTTOM IMAGE -->
+    <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0;">
+        <img src="{c['bottom']}" alt="Access Bank Bottom" style="width: 100%; height: 100%; display: block; object-fit: fill;">
+    </div>
+</div>
+</body>
+</html>"""
+
+
 # ════════════════════════════════════════════════════════════════
-# TEMPLATE REGISTRY  (5 templates)
+# TEMPLATE REGISTRY  (6 templates)
 # ════════════════════════════════════════════════════════════════
 TEMPLATES = [
     ("UBA Classic",       tpl_uba1),
@@ -783,6 +864,7 @@ TEMPLATES = [
     ("Roqqu",             tpl_roqqu),
     ("Kuda",              tpl_kuda),
     ("Sparkle",           tpl_sparkle),
+    ("Access Bank",       tpl_access_bank),
 ]
 
 
@@ -977,7 +1059,7 @@ async def post_to_all_channels(bot: Bot):
 
 # ════════════════════════════════════════════════════════════════
 # SCHEDULER
-# ════════════════════════════  ═══════════════════════════════════
+# ═══════════════════════  ════  ═══════════════════════════════════
 async def scheduler(bot: Bot):
     logger.info(f"    Posting every {POST_INTERVAL_MINUTES} minute(s)")
     while True:
