@@ -247,7 +247,7 @@ body{{font-family:'Inter',sans-serif;background:white;margin:0;padding:0}}
     </div>
     <h2 class="section-title mb-2">Accounts Details:-</h2>
     <div class="border-thin mb-4"></div>
-    <div><span class="font-semibold">Narration:</span> Transfer from DAIMORAX</div>
+    <div><span class="font-semibold">Narration:</span> TNF-DaimoraX/Transfer/ To {receiver}</div>
   </div>
 </div>
 </body></html>"""
@@ -285,7 +285,7 @@ body{{font-family:'Inter',sans-serif}}
   </div>
   <h2 class="section-title mb-2">Accounts Details:-</h2>
   <div class="border-thin mb-4"></div>
-  <div><span class="font-semibold">Narration:</span> Transfer from DAIMORAX</div>
+  <div><span class="font-semibold">Narration:</span> TNF-DaimoraX/Transfer/ To {receiver}</div>
 </div>
 <div style="width:100%;line-height:0">
   <img src="https://i.ibb.co/Pvmp72tz/photo-2025-10-05-21-15-20.jpg"
@@ -669,29 +669,32 @@ def tpl_daimorax(amount: int, tx: datetime, bank_name: str,
         </svg>
     </div>
 
-    <!-- Floating Bottom Navigation -->
+    <!-- Floating Bottom Navigation (Liquid Glass) -->
     <div class="mt-5 mx-1">
-        <div class="flex justify-between items-center rounded-[28px] px-2 py-1.5"
-             style="background: rgba(25,25,25,0.85); border: 1px solid rgba(212,175,55,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 20px rgba(212,175,55,0.1);">
-            <div class="flex-1 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[20px] text-gray-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative flex justify-between items-center rounded-[30px] px-2.5 py-1.5 overflow-hidden"
+             style="background: linear-gradient(135deg, rgba(38,38,38,0.72), rgba(18,18,18,0.72)); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.12) inset, 0 -1px 1px rgba(0,0,0,0.3) inset, 0 0 24px rgba(212,175,55,0.08);">
+            <!-- Top liquid sheen -->
+            <div class="absolute top-0 left-0 right-0 pointer-events-none" style="height: 45%; background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent); border-radius: 30px 30px 50% 50%; z-index: 0;"></div>
+            <!-- Active pill indicator (Home) -->
+            <div class="flex-1 relative z-10 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[22px]" style="color: #F4CF47; background: linear-gradient(135deg, rgba(212,175,55,0.28), rgba(212,175,55,0.12)); border: 1px solid rgba(212,175,55,0.35); box-shadow: 0 0 18px rgba(212,175,55,0.35), 0 2px 8px rgba(0,0,0,0.3), 0 1px 1px rgba(255,255,255,0.15) inset;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width: 2.5; transform: translateY(-2px) scale(1.15); filter: drop-shadow(0 0 6px rgba(212,175,55,0.6));">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
                 <span class="text-[10px] font-medium">Home</span>
             </div>
-            <div class="flex-1 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[20px] text-gray-400">
+            <div class="flex-1 relative z-10 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[22px]" style="color: #9CA3AF;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
                 </svg>
                 <span class="text-[10px] font-medium">Mine</span>
             </div>
-            <div class="flex-1 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[20px] text-gray-400">
+            <div class="flex-1 relative z-10 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[22px]" style="color: #9CA3AF;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
                 <span class="text-[10px] font-medium">History</span>
             </div>
-            <div class="flex-1 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[20px] text-gray-400">
+            <div class="flex-1 relative z-10 flex flex-col items-center gap-0.5 px-4 py-2 rounded-[22px]" style="color: #9CA3AF;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
@@ -708,7 +711,7 @@ def tpl_daimorax(amount: int, tx: datetime, bank_name: str,
 # ── Sparkle ───────────────────────────────────────────────────────────────────
 def tpl_sparkle(receiver: str, amount: int, tx: datetime) -> str:
     months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
-    days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+    days   = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
     day_name = days[tx.weekday()]
     date_str = f"{day_name}, {str(tx.day).zfill(2)} {months[tx.month-1]}, {tx.year}. {str(tx.hour).zfill(2)}:{str(tx.minute).zfill(2)} {'pm' if tx.hour >= 12 else 'am'}"
     session_id = "".join(random.choices("0123456789", k=30))
@@ -933,7 +936,7 @@ async def html_to_image(html: str) -> BytesIO:
     return buf
 
 
-# ════════════════════════════════════════════════════════════════
+# ═══════════════����════════════════════════════════════════════════
 # CHANNEL AUTO-DISCOVERY
 # ════════════════════════════════════════════════════════════════
 def register_channel(chat_id: int, title: str = ""):
@@ -1020,7 +1023,7 @@ async def post_to_all_channels(bot: Bot):
     else:
         caption = (
             "🚨 <b>Credit Alert!</b>\n\n"
-            f"<b>DaimoraX has successfully credited a user with {fmt_caption(amount)}.00 just now.</b>\n\n"
+            f"<b>DaimoraX has successfully credited {receiver} with {fmt_caption(amount)}.00 just now.</b>\n\n"
             "<blockquote>Don't hold back any longer, what are you waiting for? 💰</blockquote>\n\n"
             "<b>Go to: <a href='https://daimorax.com'>daimorax.com</a> and get started.</b>"
         )
