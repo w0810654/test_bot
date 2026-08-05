@@ -908,7 +908,11 @@ async def html_to_image(html: str) -> BytesIO:
         page = await context.new_page()
 
         # Load page; allow 30 s for CDN resources
-        await page.set_content(html, wait_until="networkidle", timeout=30_000)
+        await page.set_content(
+    html,
+    wait_until="domcontentloaded",
+    timeout=60_000
+)
 
         # Extra pause for slower CDN hosts (ibb.co, vercel blob, postimg…)
         await asyncio.sleep(3)
