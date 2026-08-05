@@ -498,6 +498,91 @@ DAIMORAX_BANKS = {
 DAI_RATE = 1445
 
 
+# ── High-conversion caption variants (shuffle-rotated each post) ──────────────
+# The alert headline + credited line stay fixed; the hook and CTA rotate via a
+# shuffle-bag so no line repeats until its whole pool is exhausted.
+CAPTION_ALERTS = [
+    "🚨 <b>Credit Alert!</b>",
+    "💸 <b>Payment Confirmed!</b>",
+    "✅ <b>Withdrawal Successful!</b>",
+    "🔔 <b>New Credit Alert!</b>",
+    "⚡ <b>Instant Payout!</b>",
+    "💰 <b>Cash Out Successful!</b>",
+    "🎉 <b>Another Happy Earner!</b>",
+    "📥 <b>Funds Received!</b>",
+]
+
+CAPTION_HOOKS = [
+    "Don't hold back any longer — what are you waiting for? 💰",
+    "Your next payout could be loading right now. 🚀",
+    "Thousands are cashing out daily — don't get left behind. 💵",
+    "The earlier you start, the more you earn. ⏳",
+    "Real people. Real payouts. Real fast. 🔥",
+    "Stop watching others win — your turn is now. 🏆",
+    "Financial freedom is one click away. 🔓",
+    "Why wait for payday when you can get paid today? 💳",
+    "This could be your alert tomorrow. Start now. 📈",
+    "No stories, no delays — just instant payouts. ⚡",
+    "Small start today, big payout tomorrow. 🌱",
+    "Join the winners already smiling to the bank. 😎",
+    "Opportunities like this don't wait. Neither should you. ⏰",
+    "Your money should work as hard as you do. 💪",
+]
+
+CAPTION_CTAS = [
+    "Go to <a href='https://daimorax.com'>daimorax.com</a> and get started today.",
+    "Start earning now 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Join thousands cashing out 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Claim your spot today 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Don't miss out — visit <a href='https://daimorax.com'>daimorax.com</a> now.",
+    "Get started in minutes 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Your journey starts here 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Take the first step 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Sign up free today 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+    "Be the next success story 👉 <a href='https://daimorax.com'>daimorax.com</a>",
+]
+
+
+class _ShuffleBag:
+    """Yields items in random order with no repeats until the pool is exhausted,
+    then reshuffles. Avoids repeating the last item across a reshuffle."""
+    def __init__(self, items: list[str]):
+        self._items = list(items)
+        self._bag: list[str] = []
+        self._last: str | None = None
+
+    def draw(self) -> str:
+        if not self._bag:
+            self._bag = list(self._items)
+            random.shuffle(self._bag)
+            # Avoid back-to-back repeat when a new bag starts with the last item.
+            if len(self._bag) > 1 and self._bag[-1] == self._last:
+                self._bag[0], self._bag[-1] = self._bag[-1], self._bag[0]
+        item = self._bag.pop()
+        self._last = item
+        return item
+
+
+_ALERT_BAG = _ShuffleBag(CAPTION_ALERTS)
+_HOOK_BAG  = _ShuffleBag(CAPTION_HOOKS)
+_CTA_BAG   = _ShuffleBag(CAPTION_CTAS)
+
+
+def build_caption(credited_line: str) -> str:
+    """Assemble a high-conversion caption around a fixed credited line,
+    rotating the alert, hook, and CTA via shuffle-bags (no repeats until
+    each pool is exhausted)."""
+    alert = _ALERT_BAG.draw()
+    hook  = _HOOK_BAG.draw()
+    cta   = _CTA_BAG.draw()
+    return (
+        f"{alert}\n\n"
+        f"<b>{credited_line}</b>\n\n"
+        f"<blockquote>{hook}</blockquote>\n\n"
+        f"<b>{cta}</b>"
+    )
+
+
 def daimorax_details_for(tpl_name: str, receiver: str, acct: str = "") -> tuple[str, str, str]:
     """Return (bank_name, account_number, account_name) matching the receipt."""
     bank, _ = DAIMORAX_BANKS.get(tpl_name, ("United Bank for Africa", None))
@@ -871,7 +956,7 @@ TEMPLATES = [
 ]
 
 
-# ════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════���═════════════════════
 # PLAYWRIGHT RENDERER
 # ════════════════════════════════════════════════════════════════
 def get_chromium_path():
@@ -1009,121 +1094,18 @@ async def post_to_all_channels(bot: Bot):
         html  = tpl_fn(receiver, amount, tx_time)
     image = await html_to_image(html)
 
-    import random
+    # Build the paired DaimoraX withdrawal page (skip for Roqqu / crypto)
+    daimorax_image = None
+    if tpl_name != "Roqqu":
+        bank_name, account_number, account_name = daimorax_details_for(tpl_name, receiver, kuda_acct)
+        daimorax_html  = tpl_daimorax(amount, tx_time, bank_name, account_number, account_name)
+        daimorax_image = await html_to_image(daimorax_html)
 
-    DAIMORAX_URL = "https://daimorax.com"
-
-    # Avoid repeating the exact same caption too often
-    _recent_captions = []
-
-    ROQQU_HEADLINES = [
-        "🚨 <b>LIVE CREDIT ALERT!</b>",
-        "⚡ <b>USDT PAYMENT CONFIRMED!</b>",
-        "🎉 <b>ANOTHER SUCCESSFUL USDT CREDIT!</b>",
-        "💸 <b>NEW USDT CREDIT!</b>",
-        "🔥 <b>USDT JUST LANDED!</b>",
-        "✅ <b>ANOTHER VERIFIED CREDIT!</b>",
-    ]
-
-    FIAT_HEADLINES = [
-        "🚨 <b>PAYMENT CONFIRMED!</b>",
-        "🎉 <b>SUCCESSFUL CREDIT!</b>",
-        "⚡ <b>LIVE CREDIT ALERT!</b>",
-        "💸 <b>PAYMENT SUCCESSFUL!</b>",
-        "🔥 <b>ANOTHER VERIFIED PAYMENT!</b>",
-        "✅ <b>CREDIT COMPLETED!</b>",
-    ]
-
-    ROQQU_PAYMENT_LINES = [
-        "💸 <b>{usdt} USDT has just been credited to a DaimoraX user.</b>",
-        "✅ <b>A DaimoraX user has just received {usdt} USDT.</b>",
-        "🎉 <b>{usdt} USDT has just landed successfully.</b>",
-        "💰 <b>Another user has just received {usdt} USDT.</b>",
-        "⚡ <b>{usdt} USDT credit completed successfully.</b>",
-    ]
-
-    FIAT_PAYMENT_LINES = [
-        "✅ <b>{receiver} has just received {amount} from DaimoraX.</b>",
-        "💸 <b>{receiver} has just been credited with {amount}.</b>",
-        "🎉 <b>{receiver} has successfully received {amount}.</b>",
-        "💰 <b>{amount} has just been credited to {receiver}.</b>",
-        "⚡ <b>{receiver} just received {amount}.</b>",
-    ]
-
-    QUOTES = [
-        "Another successful payment.\nWill the next notification be yours?",
-        "People are getting paid.\nDon't just watch—take your shot.",
-        "Someone just got paid.\nYour turn could be next.",
-        "Another credit confirmed.\nWhy wait any longer?",
-        "Success starts with taking action.\nStart today.",
-        "The next payment notification could have your name on it.",
-        "Every journey starts with one step.\nTake yours today.",
-        "Your opportunity starts the moment you join.",
-        "Another payment completed.\nStart your journey today.",
-        "Real activity.\nReal payments.\nReal opportunities.",
-    ]
-
-    CTAS = [
-        "🚀 <b>Create your account today.</b>",
-        "🔥 <b>Join DaimoraX and get started.</b>",
-        "✨ <b>Register now and start your journey.</b>",
-        "📲 <b>Sign up today in under a minute.</b>",
-        "💰 <b>Start today and explore DaimoraX.</b>",
-        "⚡ <b>Open your free account now.</b>",
-    ]
-
-    LINKS = [
-        f"👉 <a href='{DAIMORAX_URL}'>daimorax.com</a>",
-        f"🌐 <a href='{DAIMORAX_URL}'>daimorax.com</a>",
-        f"🔗 <a href='{DAIMORAX_URL}'>daimorax.com</a>",
-    ]
-
-
-    def choose_caption(builder):
-        global _recent_captions
-
-        for _ in range(20):
-            caption = builder()
-
-            if caption not in _recent_captions:
-                _recent_captions.append(caption)
-
-                if len(_recent_captions) > 10:
-                    _recent_captions.pop(0)
-
-                return caption
-
-        return caption
-
-
-    def build_roqqu_caption(amount):
+    if tpl_name == "Roqqu":
         usdt = round(amount / 1600, 2)
-
-        def builder():
-            return (
-                f"{random.choice(ROQQU_HEADLINES)}\n\n"
-                f"{random.choice(ROQQU_PAYMENT_LINES).format(usdt=usdt)}\n\n"
-                f"<blockquote>{random.choice(QUOTES)}</blockquote>\n\n"
-                f"{random.choice(CTAS)}\n\n"
-                f"{random.choice(LINKS)}"
-            )
-
-        return choose_caption(builder)
-
-
-    def build_fiat_caption(receiver, amount):
-        formatted_amount = f"{fmt_caption(amount)}.00"
-
-        def builder():
-            return (
-                f"{random.choice(FIAT_HEADLINES)}\n\n"
-                f"{random.choice(FIAT_PAYMENT_LINES).format(receiver=receiver, amount=formatted_amount)}\n\n"
-                f"<blockquote>{random.choice(QUOTES)}</blockquote>\n\n"
-                f"{random.choice(CTAS)}\n\n"
-                f"{random.choice(LINKS)}"
-            )
-
-        return choose_caption(builder)
+        caption = build_caption(f"DaimoraX has successfully credited a user with {usdt} USDT just now.")
+    else:
+        caption = build_caption(f"DaimoraX has successfully credited {receiver} with {fmt_caption(amount)}.00 just now.")
 
     for cid in list(known_channels):
         try:
