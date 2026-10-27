@@ -337,6 +337,308 @@ body{{font-family:'Inter',sans-serif;background:#fff;min-height:100vh}}
 </body></html>"""
 
 
+# ── Roqqu App (mobile app receipt, light/dark) ────────────────────────────────
+# CSS copied verbatim from the original Roqqu generator (receipt styles only).
+ROQQU_APP_CSS = """
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Open Sans", sans-serif; background: #f5f5f5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .container { max-width: calc(600px); margin: 0 auto; min-height: 100vh; }
+        .receipt-view { display: none; background: #f5f5f5; min-height: 100vh; }
+        .receipt-view.show { display: block; }
+
+        .light-receipt { background: #fff; }
+        .light-receipt .receipt-header { display: flex; align-items: center; padding: 16px 20px; background: #fff; }
+        .light-receipt .back-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; }
+        .light-receipt .back-btn svg { width: 20px; height: 20px; color: #1a1a1a; }
+        .light-receipt .header-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; color: #1a1a1a; margin-right: 32px; }
+        .light-receipt .receipt-content { padding: 20px; background: #fff; }
+        .light-receipt .crypto-logo-section { text-align: center; margin-bottom: 16px; }
+        .light-receipt .crypto-logo { width: calc(80px); height: calc(80px); border-radius: 50%; margin: 0 auto; background: #e1e0e0; object-fit: contain; padding: 8px; display: block; }
+        .light-receipt .amount-display { text-align: center; margin-bottom: 6px; }
+        .light-receipt .amount-value { font-size: 28px; font-weight: 900; color: #1a1a1a; }
+        .light-receipt .date-display { text-align: center; font-size: 14px; color: #888; margin-bottom: 24px; }
+        .light-receipt .share-buttons-container { width: 100%; max-width: 1700px; margin: 0 auto; }
+        .light-receipt .share-buttons-img { width: 100%; height: auto; transform: scale(1.1); margin-bottom: 10PX; border-radius: 16px; display: block; }
+        .light-receipt .description-card { background: #f5f5f5; margin-left: -3px; margin-right: -3px; border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; }
+        .light-receipt .description-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+        .light-receipt .description-value { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+        .light-receipt .details-card { background: #f5f5f5; margin-left: -3px; margin-right: -3px; border-radius: 16px; padding: 6px 0; }
+        .light-receipt .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #f0eeee; }
+        .light-receipt .detail-row:last-child { border-bottom: none; }
+        .light-receipt .detail-label { font-size: 14px; color: #888; }
+        .light-receipt .detail-value { font-size: 14px; font-weight: 600; color: #1a1a1a; text-align: right; }
+
+        .dark-receipt { background: #0a0b0d; }
+        .dark-receipt .receipt-header { display: flex; align-items: center; padding: 16px 20px; background: #0a0b0d; }
+        .dark-receipt .back-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; }
+        .dark-receipt .back-btn svg { width: 20px; height: 20px; color: #fff; }
+        .dark-receipt .header-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; color: #fff; margin-right: 32px; }
+        .dark-receipt .receipt-content { padding: 20px; background: #0a0b0d; }
+        .dark-receipt .crypto-logo-section { text-align: center; margin-bottom: 16px; }
+        .dark-receipt .crypto-logo { width: calc(80px); height: calc(80px); border-radius: 50%; margin: 0 auto; background: #373A3F; object-fit: contain; padding: 8px; display: block; }
+        .dark-receipt .amount-display { text-align: center; margin-bottom: 6px; }
+        .dark-receipt .amount-value { font-size: 28px; font-weight: 800; color: #fff; }
+        .dark-receipt .date-display { text-align: center; font-size: 14px; color: #888; margin-bottom: 24px; }
+        .dark-receipt .share-buttons-container { width: 100%; max-width: 1700px; margin: 0 auto; }
+        .dark-receipt .share-buttons-img { width: 100%; height: auto; transform: scale(1.1); margin-bottom: 10PX; border-radius: 16px; display: block; }
+        .dark-receipt .description-card { background: #14151a; border-radius: 16px; margin-left: -3PX; margin-right: -3PX; padding: 18px 20px; margin-bottom: 16px; }
+        .dark-receipt .description-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+        .dark-receipt .description-value { font-size: 13px; font-weight: 500; color: #fff; }
+        .dark-receipt .details-card { background: #14151a; margin-left: -3PX; margin-right: -3PX; border-radius: 16px; padding: 6px 0; }
+        .dark-receipt .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #131313; }
+        .dark-receipt .detail-row:last-child { border-bottom: none; }
+        .dark-receipt .detail-label { font-size: 14px; color: #888; }
+        .dark-receipt .detail-value { font-size: 14px; font-weight: 400; color: #fff; text-align: right; }
+"""
+
+ROQQU_SHARE_IMG = {
+    "light": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Roqqu%20Light%20Sahre%20button-VOruesCeRGuzRqzOwlkoicSZXm85UY.jpg",
+    "dark":  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Roqqu%20Dark%20Share%20button-TMptDnr04cv3dZtAzQSmCm6eWfi7tg.jpg",
+}
+
+
+def fmt_roqqu_date(tx: datetime) -> str:
+    """Matches the original JS formatDate: 'April 12, 2026 10:40 PM'."""
+    months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    h = tx.hour % 12 or 12
+    ampm = "PM" if tx.hour >= 12 else "AM"
+    return f"{months[tx.month-1]} {tx.day}, {tx.year} {h}:{tx.minute:02d} {ampm}"
+
+
+def tpl_roqqu_app(receiver: str, amount: int, tx: datetime, theme: str = "light") -> str:
+    usdt        = round(amount / 1600, 2)
+    usdt_str    = f"{usdt:g}"
+    usdt_6dp    = f"{usdt:.6f}"
+    tx_id       = "101" + "".join(random.choices("0123456789", k=6))
+    date_str    = fmt_roqqu_date(tx)
+    back_color  = "#1a1a1a" if theme == "light" else "#fff"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roqqu Receipt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>{ROQQU_APP_CSS}</style>
+</head>
+<body>
+    <div class="container">
+        <div class="receipt-view {theme}-receipt show">
+            <div class="receipt-header">
+                <button class="back-btn">
+                    <ion-icon name="chevron-back-outline" style="font-size: 24px; color: {back_color};"></ion-icon>
+                </button>
+                <span class="header-title">Transaction detail</span>
+            </div>
+
+            <div class="receipt-content">
+                <div class="crypto-logo-section">
+                    <img class="crypto-logo" src="https://www.coinmetro.com/_next/static/media/USDT.e5b6b9e8.svg" alt="Crypto">
+                </div>
+
+                <div class="amount-display">
+                    <span class="amount-value">{usdt_str} USDT</span>
+                </div>
+
+                <div class="date-display">{date_str}</div>
+
+                <div class="share-buttons-container">
+                    <img src="{ROQQU_SHARE_IMG[theme]}" alt="Share Buttons" class="share-buttons-img">
+                </div>
+
+                <div class="description-card">
+                    <div class="description-label">Description</div>
+                    <div class="description-value">Received {usdt_6dp} USDT from transfer</div>
+                </div>
+
+                <div class="details-card">
+                    <div class="detail-row">
+                        <span class="detail-label">ID</span>
+                        <span class="detail-value">{tx_id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount</span>
+                        <span class="detail-value">{usdt_str} USDT</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type</span>
+                        <span class="detail-value">USDT Received</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction date</span>
+                        <span class="detail-value">{date_str}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+def tpl_roqqu_app_any(receiver: str, amount: int, tx: datetime) -> str:
+    """Roqqu App counts as one template; the light/dark theme is picked 50/50 here."""
+    theme = random.choice(["light", "dark"])
+    logger.info(f"🎨 Roqqu App theme: {theme.title()}")
+    return tpl_roqqu_app(receiver, amount, tx, theme=theme)
+
+
+# ── Binance ───────────────────────────────────────────────────────────────────
+BINANCE_NETWORK = "TRON (TRC20)"
+BINANCE_ACCOUNTS = ["Funding Account", "Spot Account"]
+_HEX = "0123456789abcdef"
+_B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+
+def binance_address(network: str) -> str:
+    if "TRC20" in network or "TRON" in network:
+        return "T" + "".join(random.choices(_B58, k=33))
+    if "Solana" in network:
+        return "".join(random.choices(_B58, k=44))
+    if "Bitcoin" in network:
+        return "bc1q" + "".join(random.choices(_HEX, k=38))
+    return "0x" + "".join(random.choices(_HEX, k=40))
+
+
+def tpl_binance(receiver: str, amount: int, tx: datetime, theme: str = "dark") -> str:
+    body_bg  = "#fff" if theme == "light" else "#0B0E11"
+    usdt     = round(amount / 1600, 2)
+    network  = BINANCE_NETWORK
+    account  = random.choice(BINANCE_ACCOUNTS)
+    address  = binance_address(network)
+    tx_hash  = "".join(random.choices(_HEX, k=64))
+    time_str = tx.strftime("%Y-%m-%d %H:%M:%S")
+    copy_svg = ('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+                '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>')
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Binance - Deposit Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {{
+            theme: {{
+                extend: {{
+                    fontFamily: {{ 'sans': ['Inter', 'sans-serif'] }},
+                    colors: {{
+                        binbg: '#0B0E11',
+                        bincard: '#1E2329',
+                        bingray: '#848E9C',
+                        bingreen: '#0ECB81',
+                        binyellow: '#FCD535',
+                        binborder: '#2B3139',
+                    }}
+                }}
+            }}
+        }}
+    </script>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }}
+        body {{ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: {body_bg}; }}
+        ::-webkit-scrollbar {{ width: 0; }}
+        body.dark .receipt-bg {{ background-color: #0B0E11; }}
+        body.dark .receipt-title {{ color: #fff; }}
+        body.dark .receipt-qty-label {{ color: #848E9C; }}
+        body.dark .receipt-qty-val {{ color: #fff; }}
+        body.dark .receipt-label {{ color: #848E9C; }}
+        body.dark .receipt-value {{ color: #fff; }}
+        body.dark .receipt-btn-border {{ border-color: #2B3139; color: #fff; }}
+        body.dark .receipt-back svg {{ stroke: #fff; }}
+        body.dark .receipt-copy svg {{ stroke: #848E9C; }}
+        body.dark .succeeded-pill {{ background-color: #0B0E11; }}
+        body.light .receipt-bg {{ background-color: #fff; }}
+        body.light .receipt-title {{ color: #1E2329; }}
+        body.light .receipt-qty-label {{ color: #848E9C; }}
+        body.light .receipt-qty-val {{ color: #1E2329; }}
+        body.light .receipt-label {{ color: #848E9C; }}
+        body.light .receipt-value {{ color: #1E2329; }}
+        body.light .receipt-btn-border {{ border-color: #EAECEF; color: #1E2329; }}
+        body.light .receipt-back svg {{ stroke: #1E2329; }}
+        body.light .receipt-copy svg {{ stroke: #AEB4BC; }}
+        body.light .succeeded-pill {{ background-color: #FFF; }}
+        .receipt-view {{ display: flex; }}
+    </style>
+</head>
+<body class="{theme}">
+    <div class="receipt-view receipt-bg" style="max-width: 430px; margin: 0 auto; min-height: 100vh; flex-direction: column;">
+
+        <!-- Top Bar -->
+        <div class="flex items-center px-5 receipt-bg" style="padding-top: 16px; padding-bottom: 14px;">
+            <button class="mr-4 receipt-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <span class="receipt-title font-semibold text-base flex-1 text-center" style="margin-right: 24px;">Deposit Details</span>
+        </div>
+
+        <!-- Quantity Section -->
+        <div class="flex flex-col items-center receipt-bg" style="padding: 28px 24px 32px;">
+            <p class="receipt-qty-label text-sm mb-2">Quantity</p>
+            <p class="receipt-qty-val font-bold mb-3" style="font-size: 28px; letter-spacing: -0.5px;">{usdt} USDT</p>
+            <div class="succeeded-pill inline-flex items-center gap-1.5 px-3 py-1.5" style="border-radius: 20px;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="9" cy="9" r="8" fill="rgba(14,203,129,0.15)" stroke="#0ECB81" stroke-width="1.5"/>
+                    <path d="M5.5 9.2L7.8 11.5L12.5 6.5" stroke="#0ECB81" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span style="color: #0ECB81; font-size: 13px; font-weight: 600; letter-spacing: 0.01em;">Succeeded</span>
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="px-6" style="padding-top: 16px;">
+            <div class="flex justify-between items-center" style="padding: 16px 0;">
+                <span class="receipt-label text-sm">Deposit Account</span>
+                <span class="receipt-value text-sm font-medium text-right">{account}</span>
+            </div>
+            <div class="flex justify-between items-center" style="padding: 16px 0;">
+                <span class="receipt-label text-sm">Chain Type</span>
+                <span class="receipt-value text-sm font-medium text-right">{network}</span>
+            </div>
+            <div class="flex justify-between items-center" style="padding: 16px 0;">
+                <span class="receipt-label text-sm">Time</span>
+                <span class="receipt-value text-sm font-medium text-right">{time_str}</span>
+            </div>
+            <div class="flex justify-between items-start" style="padding: 16px 0;">
+                <span class="receipt-label text-sm flex-shrink-0" style="margin-right: 20px;">Deposit Address</span>
+                <div class="flex items-start gap-1.5">
+                    <span class="receipt-value text-sm font-medium text-right break-all" style="line-height: 1.65; max-width: 220px; filter: blur(4px); user-select: none;">{address}</span>
+                    <button class="receipt-copy flex-shrink-0 mt-0.5">{copy_svg}</button>
+                </div>
+            </div>
+            <div class="flex justify-between items-start" style="padding: 16px 0;">
+                <span class="receipt-label text-sm flex-shrink-0" style="margin-right: 20px;">Transaction Hash</span>
+                <div class="flex items-start gap-1.5">
+                    <span class="receipt-value text-sm font-medium text-right break-all" style="line-height: 1.65; max-width: 220px; filter: blur(4px); user-select: none;">{tx_hash}</span>
+                    <button class="receipt-copy flex-shrink-0 mt-0.5">{copy_svg}</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <div class="px-6" style="padding-bottom: 44px;">
+            <button class="receipt-btn-border w-full py-3.5 rounded-full font-semibold text-sm" style="background: transparent; border-width: 1.5px; border-style: solid;">
+                View in Blockchain Explorer
+            </button>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+def tpl_binance_light(receiver: str, amount: int, tx: datetime) -> str:
+    return tpl_binance(receiver, amount, tx, theme="light")
+
+
+
 # ── Kuda ──────────────────────────────────────────────────────────────────────
 def tpl_kuda(receiver: str, amount: int, tx: datetime, kuda_acct: str = "9720396770") -> str:
     months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -484,6 +786,324 @@ def tpl_kuda(receiver: str, amount: int, tx: datetime, kuda_acct: str = "9720396
 </html>"""
 
 
+# ── FairMoney ─────────────────────────────────────────────────────────────────
+FAIRMONEY_SENDER_BANKS = ["PAYSTACK-TITAN", "Moniepoint", "OPAY", "Palmpay", "Wema Bank"]
+
+
+def tpl_fairmoney(receiver: str, amount: int, tx: datetime, fm_acct: str = "2001499853") -> str:
+    months = ["January","February","March","April","May","June","July",
+              "August","September","October","November","December"]
+    h = tx.hour % 12 or 12
+    ampm = "PM" if tx.hour >= 12 else "AM"
+    date_time = f"{tx.day} {months[tx.month-1]} {tx.year}, {h}:{tx.strftime('%M')} {ampm}"
+    transaction_id = "940" + str(random.randint(100000, 999999))
+    sender_name = "DaimoraX"
+    sender_bank = random.choice(FAIRMONEY_SENDER_BANKS)
+    sender_acct = rand_digits(10)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FairMoney Receipt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+
+        body {{
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }}
+
+        .container {{
+            width: calc(100%);
+            max-width: calc(420px);
+            margin: 0 auto;
+        }}
+
+        /* ==================== RECEIPT STYLES ==================== */
+        .receipt-view {{
+            display: block;
+            background: #fff;
+            min-height: 100vh;
+        }}
+
+        .receipt-header {{
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: #fff;
+        }}
+
+        .back-btn {{
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        .back-btn ion-icon {{
+            font-size: 24px;
+            color: #1a1a1a;
+        }}
+
+        .receipt-content {{
+            padding: 0 20px;
+            margin-bottom: 0;
+        }}
+
+        /* Main Card */
+        .main-card {{
+            width: calc(100% - 0px);
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e8e8e8;
+            padding: 20px;
+            margin-bottom: 0;
+        }}
+
+        .card-top {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }}
+
+        .amount {{
+            font-size: 19px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5PX;
+        }}
+
+        .bank-icon {{
+            width: 50px;
+            height: 50px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        .bank-icon img {{
+            width: 28px;
+            height: 28px;
+            color: #666;
+        }}
+
+        .from-name {{
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }}
+
+        .date-time {{
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }}
+
+        .status-badge {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #3bb54a;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }}
+
+        .status-badge svg {{
+            width: 15px;
+            height: 15px;
+        }}
+
+        .divider {{
+            height: 1px;
+            background: #e8e8e8;
+            margin: 16px 0;
+        }}
+
+        .section-title {{
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }}
+
+        .detail-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }}
+
+        .detail-row:last-child {{
+            margin-bottom: 0;
+        }}
+
+        .detail-label {{
+            font-size: 14px;
+            color: #666;
+        }}
+
+        .detail-value {{
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 500;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .copy-icon {{
+            width: 15px;
+            height: 15px;
+            color: #3bb54a;
+            cursor: pointer;
+        }}
+
+        .notes-section {{
+            margin-top: 16px;
+        }}
+
+        .notes-title {{
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }}
+
+        .notes-text {{
+            font-size: 14px;
+            color: #666;
+        }}
+
+        /* Bottom Image */
+        .bottom-image-container {{
+            width: calc(100% - 0px);
+            margin: 0;
+            padding: 0 4px;
+            height: auto;
+            transform: translateY(-50px);
+        }}
+
+        .bottom-image {{
+            width: calc(100% - 0px);
+            display: block;
+            margin: 0;
+            padding: 0;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="receiptView" class="receipt-view">
+            <div class="receipt-header">
+                <button class="back-btn">
+                    <ion-icon name="arrow-back-outline"></ion-icon>
+                </button>
+            </div>
+
+            <div class="receipt-content">
+                <div class="main-card">
+                    <div class="card-top">
+                        <div>
+                            <div class="amount">+N{amount:,}</div>
+                            <div class="from-name">From {sender_name}</div>
+                            <div class="date-time">{date_time}</div>
+                        </div>
+                        <div class="bank-icon">
+                            <img src="https://i.postimg.cc/pLrvtnrx/bank.jpg">
+                        </div>
+                    </div>
+
+                    <div class="status-badge">
+                        <span>Transaction successful</span>
+                        <svg viewBox="0 0 24 24" fill="#3bb54a">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="section-title">Transaction details</div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction ID</span>
+                        <span class="detail-value">
+                            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="#3bb54a" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>{transaction_id}</span>
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction type</span>
+                        <span class="detail-value">Incoming Transfer</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">From</span>
+                        <span class="detail-value">{sender_name}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Sender's bank</span>
+                        <span class="detail-value">{sender_bank}&nbsp;&bull; <span style="filter: blur(4px); display: inline-block; white-space: nowrap; user-select: none;">{sender_acct}</span></span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">To</span>
+                        <span class="detail-value">{receiver.upper()}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Recipient Bank</span>
+                        <span class="detail-value">FairMoney Bank&nbsp;&bull; <span style="filter: blur(4px); display: inline-block; white-space: nowrap; user-select: none;">{fm_acct}</span></span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="notes-section">
+                        <div class="notes-title">Notes</div>
+                        <div class="notes-text">Transfer from {sender_name}</div>
+                    </div>
+
+                    <div class="divider"></div>
+                </div>
+            </div>
+
+            <div class="bottom-image-container">
+                <img src="https://i.postimg.cc/MKvmNp5q/FM-BOTTOM.jpg" alt="FairMoney Bottom" class="bottom-image">
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+
 # ── DaimoraX Withdrawal Page (paired with each bank receipt) ──────────────────
 # Bank details shown on the withdrawal page, matched to the receipt being posted.
 DAIMORAX_BANKS = {
@@ -491,7 +1111,10 @@ DAIMORAX_BANKS = {
     "UBA Modern":  ("United Bank for Africa", None),
     "Kuda":        ("Kuda Microfinance Bank", None),
     "Sparkle":     ("Sparkle", None),
+    "Sparkle App": ("Sparkle", None),
     "Access Bank": ("Access Bank", None),
+    "FairMoney":   ("FairMoney Microfinance Bank", None),
+    "Sterling Bank": ("Sterling Bank", None),
 }
 
 # NGN value of 1 DAI, applied to the gross amount (gross / rate = DAI).
@@ -517,7 +1140,7 @@ CAPTION_HOOKS = [
     "Your next payout could be loading right now. 🚀",
     "Thousands are cashing out daily — don't get left behind. 💵",
     "The earlier you start, the more you earn. ⏳",
-    "Real people. Real payouts. Real fast. 🔥",
+    "Real people. Real payouts. Real fast. ���",
     "Stop watching others win — your turn is now. 🏆",
     "Financial freedom is one click away. 🔓",
     "Why wait for payday when you can get paid today? 💳",
@@ -525,7 +1148,7 @@ CAPTION_HOOKS = [
     "No stories, no delays — just instant payouts. ⚡",
     "Small start today, big payout tomorrow. 🌱",
     "Join the winners already smiling to the bank. 😎",
-    "Opportunities like this don't wait. Neither should you. ⏰",
+    "Opportunities like this don't wait. Neither should you. ���",
     "Your money should work as hard as you do. 💪",
 ]
 
@@ -946,14 +1569,257 @@ def tpl_access_bank(receiver: str, amount: int, tx: datetime) -> str:
 # ════════════════════════════════════════════════════════════════
 # TEMPLATE REGISTRY  (6 templates)
 # ════════════════════════════════════════════════════════════════
+def tpl_binance_any(receiver: str, amount: int, tx) -> str:
+    """Binance counts as one template; the light/dark theme is picked 50/50 here."""
+    theme_fn = random.choice([tpl_binance, tpl_binance_light])
+    logger.info(f"🎨 Binance theme: {'Light' if theme_fn is tpl_binance_light else 'Dark'}")
+    return theme_fn(receiver, amount, tx)
+
+
+# ── Sparkle App (light / dark) ────────────────────────────────────────────────
+SPARKLE_APP_LOGO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20May%2024%2C%202026%2C%2006_56_56%20AM-4HBNYsbWFZiYnsdv0KDmkwpWW9Mqju.png"
+
+SPARKLE_APP_CSS = """
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Bricolage Grotesque", sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: calc(480px); margin: 0 auto; min-height: 100vh; }
+        .receipt-view { display: block; min-height: 100vh; }
+
+        .light-receipt { background: #ffffff; }
+        .light-receipt .receipt-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; }
+        .light-receipt .receipt-title { font-size: 15px; font-weight: 500; color: #1a1a1a; }
+        .light-receipt .sparkle-logo { height: 90px; }
+        .light-receipt .amount-section { text-align: center; padding: 10px 20px 30px; }
+        .light-receipt .amount { font-size: 40px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; letter-spacing: -1px; }
+        .light-receipt .status { font-size: 14px; color: #81c522; font-weight: 500; }
+        .light-receipt .details-section { padding: 10px 35px 40px; }
+        .light-receipt .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 22px 0; border-bottom: 1px solid #e5e5e5; }
+        .light-receipt .detail-row:last-child { border-bottom: none; }
+        .light-receipt .detail-label { font-size: 14px; color: #9ca3af; font-weight: 400; }
+        .light-receipt .detail-value { font-size: 14px; color: #1a1a1a; font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
+        .light-receipt .footer { padding: 10px 30px; }
+        .light-receipt .footer-text { font-size: 13px; color: #1a1a1a; font-weight: 500; }
+
+        .dark-receipt { background: #121212; }
+        .dark-receipt .receipt-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; }
+        .dark-receipt .receipt-title { font-size: 15px; font-weight: 500; color: #ffffff; }
+        .dark-receipt .sparkle-logo { height: 90px; }
+        .dark-receipt .amount-section { text-align: center; padding: 10px 20px 30px; }
+        .dark-receipt .amount { font-size: 40px; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: -1px; }
+        .dark-receipt .status { font-size: 14px; color: #81c522; font-weight: 500; }
+        .dark-receipt .details-section { padding: 10px 35px 30px; }
+        .dark-receipt .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 22px 0; border-bottom: 1px solid #2a2a2a; }
+        .dark-receipt .detail-row:last-child { border-bottom: none; }
+        .dark-receipt .detail-label { font-size: 14px; color: #6b7280; font-weight: 400; }
+        .dark-receipt .detail-value { font-size: 14px; color: #ffffff; font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
+        .dark-receipt .footer { padding: 30px 24px; }
+        .dark-receipt .footer-text { font-size: 13px; color: #ffffff; font-weight: 500; }
+
+        @media (max-width: 480px) {
+            .container { max-width: 100%; }
+            .light-receipt .amount, .dark-receipt .amount { font-size: 36px; }
+            .light-receipt .receipt-header, .dark-receipt .receipt-header { padding: 15px 20px; }
+            .light-receipt .details-section, .dark-receipt .details-section { padding: 10px 20px 30px; }
+            .light-receipt .footer, .dark-receipt .footer { padding: 20px; }
+            .light-receipt .sparkle-logo, .dark-receipt .sparkle-logo { height: 70px; }
+        }
+        @media (max-width: 360px) {
+            .light-receipt .amount, .dark-receipt .amount { font-size: 32px; }
+            .light-receipt .detail-value, .dark-receipt .detail-value { font-size: 13px; max-width: 55%; }
+            .light-receipt .detail-label, .dark-receipt .detail-label { font-size: 13px; }
+        }
+"""
+
+
+def fmt_sparkle_app_date(tx: datetime) -> str:
+    """Matches the original: 'Mon, May 11 2026 2:35:56 pm'."""
+    hour12 = tx.hour % 12 or 12
+    ampm = "am" if tx.hour < 12 else "pm"
+    return f"{tx.strftime('%a, %b')} {tx.day} {tx.year} {hour12}:{tx.strftime('%M:%S')} {ampm}"
+
+
+def tpl_sparkle_app(receiver: str, amount: int, tx: datetime, theme: str = "light") -> str:
+    theme_class = "dark-receipt" if theme == "dark" else "light-receipt"
+    sender = "DaimoraX"
+    account = random.choice(["91", "90", "80", "81", "70"]) + rand_digits(8)
+    session_id = "100004" + tx.strftime("%y%m%d%H%M%S") + rand_digits(11)
+    amount_str = f"&#8358;{amount:,.2f}"
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sparkle Receipt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Dongle&family=Itim&family=M+PLUS+1p&family=MuseoModerno:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <style>{SPARKLE_APP_CSS}</style>
+</head>
+<body>
+    <div class="container">
+        <div class="receipt-view {theme_class}">
+            <div class="receipt-header">
+                <span class="receipt-title">Receipt</span>
+                <img src="{SPARKLE_APP_LOGO}" alt="Sparkle" class="sparkle-logo">
+            </div>
+
+            <div class="amount-section">
+                <div class="amount">{amount_str}</div>
+                <div class="status">Success</div>
+            </div>
+
+            <div class="details-section">
+                <div class="detail-row">
+                    <span class="detail-label">Sender</span>
+                    <span class="detail-value">{sender}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Recipient</span>
+                    <span class="detail-value">{receiver}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Account number</span>
+                    <span class="detail-value"><span style="filter: blur(4px); display: inline-block; white-space: nowrap; user-select: none;">{account}</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Receiving bank</span>
+                    <span class="detail-value">Sparkle</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Transaction date</span>
+                    <span class="detail-value">{fmt_sparkle_app_date(tx)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Session ID</span>
+                    <span class="detail-value"><span style="filter: blur(4px); display: inline-block; user-select: none;">{session_id}</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Comment</span>
+                    <span class="detail-value">Transfer from {sender}</span>
+                </div>
+            </div>
+
+            <div class="footer">
+                <span class="footer-text">Freedom trust tribe</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+def tpl_sparkle_app_any(receiver: str, amount: int, tx: datetime) -> str:
+    """Sparkle App counts as one template; the light/dark theme is picked 50/50 here."""
+    theme = random.choice(["light", "dark"])
+    logger.info(f"🎨 Sparkle App theme: {theme.title()}")
+    return tpl_sparkle_app(receiver, amount, tx, theme=theme)
+
+
+def tpl_sterling(receiver: str, amount: int, tx: datetime) -> str:
+    date_str = f"{str(tx.day).zfill(2)}/{str(tx.month).zfill(2)}/{tx.year}"
+    reference = rand_ref_hex(42)
+    banknip = rand_digits(16)
+    payref = "".join(random.choices("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=12))
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+    * {{
+        font-size: 14px;
+    }}
+        body {{
+            font-family: 'Inter', sans-serif;
+        }}
+        .narration-container {{
+            max-height: 120px;
+            overflow-y: auto;
+        }}
+        .narration-container::-webkit-scrollbar {{
+            width: 6px;
+        }}
+        .narration-container::-webkit-scrollbar-track {{
+            background: #f1f1f1;
+            border-radius: 10px;
+        }}
+        .narration-container::-webkit-scrollbar-thumb {{
+            background: #c1c1c1;
+            border-radius: 10px;
+        }}
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="mx-auto bg-white min-h-screen shadow-lg">
+        <!-- Header -->
+        <div class="flex items-center justify-center relative p-4 bg-white">
+            <button class="absolute left-4 p-2 rounded-full">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <h1 class="text-lg font-bold text-gray-900">Transaction History</h1>
+        </div>
+
+        <!-- Transaction Details -->
+        <div class="px-6 py-6 space-y-6">
+            <div class="pb-2 border-b border-gray-200">
+                <div class="text-gray-900 font-semibold text-sm mb-1">Transaction Amount</div>
+                <div class="text-gray-800 text-base font-medium">NGN {fmt_ngn(amount)}</div>
+            </div>
+
+            <div class="pb-2 border-b border-gray-200">
+                <div class="text-gray-900 font-semibold text-sm mb-1">Sender Name</div>
+                <div class="text-gray-800 text-base">DaimoraX</div>
+            </div>
+
+            <div class="pb-2 border-b border-gray-200">
+                <div class="text-gray-900 font-semibold text-sm mb-1">Transaction Date</div>
+                <div class="text-gray-800 text-base">{date_str}</div>
+            </div>
+
+            <div class="pb-2 border-b border-gray-200">
+                <div class="text-gray-900 font-semibold text-sm mb-1">Reference</div>
+                <div class="text-gray-800 text-base break-all">{reference}</div>
+            </div>
+
+            <div class="pb-2 border-b border-gray-200">
+                <div class="text-gray-900 font-semibold text-sm mb-1">Narration</div>
+                <div class="narration-container">
+                    <div class="text-gray-800 text-base leading-relaxed">BANKNIP From {banknip} 11006 PAYREF: {payref} SENDER: DaimoraX REMARK: Transfer to {receiver}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
 TEMPLATES = [
     ("UBA Classic",       tpl_uba1),
     ("UBA Modern",        tpl_uba2),
     ("Roqqu",             tpl_roqqu),
+    ("Roqqu App",         tpl_roqqu_app_any),
     ("Kuda",              tpl_kuda),
     ("Sparkle",           tpl_sparkle),
+    ("Sparkle App",       tpl_sparkle_app_any),
     ("Access Bank",       tpl_access_bank),
+    ("Binance",           tpl_binance_any),
+    ("FairMoney",         tpl_fairmoney),
+    ("Sterling Bank",     tpl_sterling),
 ]
+
+# Crypto templates: no DaimoraX bank-withdrawal page, USDT caption without a name.
+CRYPTO_TEMPLATES = {"Roqqu", "Roqqu App", "Binance"}
 
 
 # ══════════════════════════════════════════���═════════════════════
@@ -1068,9 +1934,9 @@ async def scan_history(bot: Bot):
         logger.warning(f"History scan failed: {e}")
 
 
-# ═════════════════════════════════════════════════════════════  ══
+# ══════════════════��══════════════════════════════════════════  ══
 # POSTER
-# ════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════���═════════════════════
 async def post_to_all_channels(bot: Bot):
     if not known_channels:
         logger.warning("⚠️  No channels found. Make the bot admin in a channel and send a message there.")
@@ -1084,11 +1950,12 @@ async def post_to_all_channels(bot: Bot):
     tpl_name, tpl_fn = random.choice(TEMPLATES)
     logger.info(f"🎲 Template: {tpl_name} | ₦{amount:,} → {receiver}")
 
-    # Generate a shared account number for Kuda (randomized each posting)
-    kuda_acct = rand_digits(10) if tpl_name == "Kuda" else ""
+    # Shared recipient account for receipts that show it, so the DaimoraX
+    # withdrawal page matches the receipt (randomized each posting)
+    kuda_acct = rand_digits(10) if tpl_name in ("Kuda", "FairMoney") else ""
 
     # Render the receipt image
-    if tpl_name == "Kuda":
+    if tpl_name in ("Kuda", "FairMoney"):
         html  = tpl_fn(receiver, amount, tx_time, kuda_acct)
     else:
         html  = tpl_fn(receiver, amount, tx_time)
@@ -1096,12 +1963,12 @@ async def post_to_all_channels(bot: Bot):
 
     # Build the paired DaimoraX withdrawal page (skip for Roqqu / crypto)
     daimorax_image = None
-    if tpl_name != "Roqqu":
+    if tpl_name not in CRYPTO_TEMPLATES:
         bank_name, account_number, account_name = daimorax_details_for(tpl_name, receiver, kuda_acct)
         daimorax_html  = tpl_daimorax(amount, tx_time, bank_name, account_number, account_name)
         daimorax_image = await html_to_image(daimorax_html)
 
-    if tpl_name == "Roqqu":
+    if tpl_name in CRYPTO_TEMPLATES:
         usdt = round(amount / 1600, 2)
         caption = build_caption(f"DaimoraX has successfully credited a user with {usdt} USDT just now.")
     else:
@@ -1149,7 +2016,7 @@ async def scheduler(bot: Bot):
         await asyncio.sleep(POST_INTERVAL_MINUTES * 60)
 
 
-# ════════════════════════════════════════════════════════════════
+# ══════════���═════════════════════════════════════════════════════
 # MAIN
 # ════════════════  ═══════════════════════════════════════════════
 async def main():
