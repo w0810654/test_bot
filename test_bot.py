@@ -1115,6 +1115,8 @@ DAIMORAX_BANKS = {
     "Access Bank": ("Access Bank", None),
     "FairMoney":   ("FairMoney Microfinance Bank", None),
     "Sterling Bank": ("Sterling Bank", None),
+    "ALAT":        ("Wema Bank", None),
+    "Moniepoint":  ("Moniepoint Microfinance Bank", None),
 }
 
 # NGN value of 1 DAI, applied to the gross amount (gross / rate = DAI).
@@ -1248,7 +1250,7 @@ def tpl_daimorax(amount: int, tx: datetime, bank_name: str,
             extend: {{
                 colors: {{
                     gold: {{ 50:'#fefce8',100:'#fef9c3',200:'#fef08a',300:'#fde047',400:'#facc15',500:'#d4af37',600:'#ca8a04',700:'#a16207',800:'#854d0e',900:'#713f12' }},
-                    dark: {{ 900:'#0a0a0a',800:'#121212',700:'#1a1a1a',600:'#2a2a2a',500:'#3a3a3a' }}
+                    dark: {{ 900:'#0b0d14',800:'#10131b',700:'#181b25',600:'#252a35',500:'#363b47' }}
                 }},
                 fontFamily: {{ 'lato': ['Lato','sans-serif'] }}
             }}
@@ -1311,6 +1313,7 @@ def tpl_daimorax(amount: int, tx: datetime, bank_name: str,
         <div class="text-center pb-3 border-b border-dark-600">
             <p class="text-gray-400 text-xs mb-1">Withdrawal Amount</p>
             <p class="text-2xl font-bold text-red-400">{dai:,.4f} DAI</p>
+            <p class="text-gray-400 text-xs mt-1">≈ ${dai:,.2f} USD</p>
         </div>
 
         <!-- Net Amount Highlight -->
@@ -1804,6 +1807,569 @@ def tpl_sterling(receiver: str, amount: int, tx: datetime) -> str:
 </html>"""
 
 
+def tpl_alat(receiver: str, amount: int, tx: datetime) -> str:
+    date_str = tx.strftime("%d %b %Y")
+    words = f"{number_to_words(amount)} Naira Only"
+    remark = f"NIP:DAIMORAX-TRF TO {receiver.upper()}"[:50]
+    reference = f"000007{tx.strftime('%y%m%d%H%M%S')}{rand_digits(12)}"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+
+        * {{
+            font-family: 'Poppins', sans-serif;
+        }}
+
+        body {{
+            background-color: white;
+            min-height: 100vh;
+            padding: 0;
+            font-size: 14px;
+        }}
+
+        .container {{
+            width: 100%;
+            max-width: 375px;
+            margin: 0 auto;
+            background: white;
+            cursor: pointer;
+        }}
+
+        .header {{
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 12px;
+        }}
+
+        .logo {{
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }}
+
+        .logo img {{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }}
+
+        .header-title {{
+            font-size: 18px;
+            font-weight: 600;
+            color: #8B0000;
+            margin-left: 25px;
+        }}
+
+        .date-section {{
+            background: #f3e8ec;
+            padding: 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 13px;
+            gap: 12px;
+        }}
+
+        .date-label {{
+            color: #8B0000;
+            flex-shrink: 0;
+            width: 40%;
+        }}
+
+        .date-value {{
+            flex: 1;
+            color: #333;
+            font-weight: 400;
+            outline: none;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-align: left;
+        }}
+
+        .details-section {{
+            padding: 16px;
+        }}
+
+        .detail-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            font-size: 13px;
+            gap: 12px;
+        }}
+
+        .detail-label {{
+            color: #8B0000;
+            flex-shrink: 0;
+            width: 40%;
+        }}
+
+        .detail-value {{
+            flex: 1;
+            color: #333;
+            font-weight: 400;
+            min-height: 18px;
+            outline: none;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            word-wrap: break-word;
+            text-align: left;
+        }}
+
+        #referenceNumber {{
+            word-break: break-all;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }}
+
+        .actions {{
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }}
+
+        .error-button {{
+            width: 100%;
+            padding: 16px;
+            border: 1.4px solid #8B0000;
+            background: transparent;
+            color: #8B0000;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+
+        .done-link {{
+            color: #8B0000;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }}
+
+        @media (max-width: 320px) {{
+            .header-title {{
+                font-size: 16px;
+            }}
+
+            .date-section, .detail-row {{
+                flex-direction: column;
+                gap: 4px;
+            }}
+
+            .date-label, .detail-label {{
+                width: 100%;
+            }}
+
+            .date-value, .detail-value {{
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.ibb.co/tPxPVGSV/channels4-profile-1.jpg" alt="ALAT Logo">
+            </div>
+            <h1 class="header-title">Transaction Details</h1>
+        </div>
+
+        <!-- Transaction Date Section -->
+        <div class="date-section">
+            <span class="date-label">Transaction Date:</span>
+            <div class="date-value" id="transactionDate">{date_str}</div>
+        </div>
+
+        <!-- Transaction Details -->
+        <div class="details-section">
+            <div class="detail-row">
+                <span class="detail-label">Transaction Amount:</span>
+                <div class="detail-value" id="transactionAmount">₦{fmt_ngn(amount)}</div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Amount in words:</span>
+                <div class="detail-value" id="amountInWords">{words}</div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Transaction Remark:</span>
+                <div class="detail-value" id="transactionRemark">{remark}</div>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Reference Number:</span>
+                <div class="detail-value" id="referenceNumber">{reference}</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+            <button class="error-button">Report an Error</button>
+            <a href="#" class="done-link">Done</a>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+MONIEPOINT_CSS = """
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #000e28 0%, #000e28 100%);
+            color: white;
+            min-height: 100vh;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 60px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            margin-right: 30px;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+            margin-right: 38px;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin: 0 20px 20px;
+            padding: 14px;
+            border: 2px dotted rgba(79, 78, 78, 0.3);
+            position: relative;
+        }
+
+        .credit-label {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .credit-arrow {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .amount {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .transaction-date {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            margin-bottom: 0;
+        }
+
+        .transfer-tag {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fad06f;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 0 20px 30px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .details-section {
+            margin: 0 20px 40px;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            cursor: pointer;
+        }
+
+        .details-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+            fill: #ffd061;
+        }
+
+        .details-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .transfer-type-tag {
+            display: inline-block;
+            background: rgba(234, 179, 8, 0.2);
+            color: #ffd061;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .home-indicator {
+            position: fixed;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        @media (max-height: 700px) {
+            .details-section {
+                margin-bottom: 30px;
+            }
+
+            .details-content {
+                margin-bottom: 15px;
+            }
+
+            body {
+                padding-bottom: 50px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .details-section {
+                margin-bottom: 25px;
+            }
+
+            .details-content {
+                margin-bottom: 10px;
+            }
+
+            body {
+                padding-bottom: 45px;
+            }
+        }
+"""
+
+
+def fmt_moniepoint_date(tx: datetime) -> str:
+    day = tx.day
+    suffix = "th" if 3 < day < 21 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+    return f"{tx.strftime('%A')}, {tx.strftime('%B')} {day}{suffix}, {tx.year}"
+
+
+def tpl_moniepoint(receiver: str, amount: int, tx: datetime) -> str:
+    date_str = fmt_moniepoint_date(tx)
+    hour12 = tx.hour % 12 or 12
+    time_str = f"{hour12}:{tx.minute:02d} {'AM' if tx.hour < 12 else 'PM'}"
+    reference = f"MIT|CRP|{rand_digits(30)}|{rand_digits(20)}_CREDIT_{random.randint(0, 9)}"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moniepoint Transaction Receipt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>{MONIEPOINT_CSS}</style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <div class="header-title">Transaction Details</div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <div class="credit-label">
+                <span class="credit-arrow">↓</span>
+                CREDIT
+            </div>
+            <div class="amount-row">
+                <div class="amount">₦{fmt_ngn(amount)}</div>
+                <div class="transfer-tag">TRANSFER</div>
+            </div>
+            <div class="transaction-date">{date_str} | {time_str}</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn" style="padding-left: 8px;">
+                <img src="https://i.postimg.cc/VkWWzBCX/dowload.jpg" alt="Share" crossorigin="anonymous">
+            </button>
+            <button class="action-btn">
+                <img src="https://i.postimg.cc/dVPykkYn/share.jpg" alt="Download" crossorigin="anonymous">
+            </button>
+        </div>
+
+        <!-- Details Section -->
+        <div class="details-section">
+            <div class="details-header">
+                <div class="details-title">Other Details</div>
+                <svg class="expand-icon" width="16" height="16" viewBox="0 0 16 16" style="transform: rotate(180deg);">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z"></path>
+                </svg>
+            </div>
+
+            <div class="details-content">
+                <div class="detail-row">
+                    <div class="detail-label">Transaction Type</div>
+                    <div class="detail-value">
+                        <span class="transfer-type-tag">Transfer</span>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Transaction Date</div>
+                    <div class="detail-value">{date_str}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Source</div>
+                    <div class="detail-value">DaimoraX</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Source Institution</div>
+                    <div class="detail-value">Moniepoint MFB</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Transaction Reference</div>
+                    <div class="detail-value">{reference}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Indicator -->
+    <div class="home-indicator"></div>
+</body>
+</html>"""
+
+
 TEMPLATES = [
     ("UBA Classic",       tpl_uba1),
     ("UBA Modern",        tpl_uba2),
@@ -1816,6 +2382,8 @@ TEMPLATES = [
     ("Binance",           tpl_binance_any),
     ("FairMoney",         tpl_fairmoney),
     ("Sterling Bank",     tpl_sterling),
+    ("ALAT",              tpl_alat),
+    ("Moniepoint",        tpl_moniepoint),
 ]
 
 # Crypto templates: no DaimoraX bank-withdrawal page, USDT caption without a name.
