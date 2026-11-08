@@ -192,7 +192,7 @@ def mask_account_sup(acc: str) -> str:
 
 # ══════════════════════════════════════════════════════     ═════════
 # SHARED CONSTANTS
-# ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════���═══════════════════
 TAILWIND   = '<script src="https://cdn.tailwindcss.com"></script>'
 INTER_FONT = '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">'
 
@@ -1117,6 +1117,8 @@ DAIMORAX_BANKS = {
     "Sterling Bank": ("Sterling Bank", None),
     "ALAT":        ("Wema Bank", None),
     "Moniepoint":  ("Moniepoint Microfinance Bank", None),
+    "OPay":        ("Opay", None),
+    "Zenith Bank": ("Zenith Bank Plc", None),
 }
 
 # NGN value of 1 DAI, applied to the gross amount (gross / rate = DAI).
@@ -1352,7 +1354,7 @@ def tpl_daimorax(amount: int, tx: datetime, bank_name: str,
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-400">Account Number</span>
-                    <span class="font-mono font-medium">{mask_account(account_number)}</span>
+                    <span class="font-mono font-medium" style="filter: blur(4px); display: inline-block; white-space: nowrap; user-select: none;">{account_number}</span>
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-400">Account Name</span>
@@ -2370,6 +2372,692 @@ def tpl_moniepoint(receiver: str, amount: int, tx: datetime) -> str:
 </html>"""
 
 
+OPAY_CSS = """
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f5f5;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #333333;
+      --text-secondary: #888888;
+      --border-color: #f0f0f0;
+      --accent: #00b389;
+      --accent-hover: #009975;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2b2b2b;
+      --bg-card: #2b2b2b;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --border-color: #3a3a3a;
+      --accent: #00b389;
+      --accent-hover: #009975;
+    }
+
+    .opay-container {
+      min-height: 100vh;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-secondary);
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    .support-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .support-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .content {
+      padding: 10px;
+      padding-bottom: 80px;
+    }
+
+    .receipt-card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 10px;
+    }
+
+    .main-card {
+      padding-top: 40px;
+      margin-top: 25px;
+      position: relative;
+    }
+
+    .bank-logo {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bank-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .transaction-main {
+      text-align: center;
+    }
+
+    .transfer-from {
+      font-size: 14px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .amount {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .details-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-size: 14px;
+      gap: 16px;
+    }
+
+    .detail-label {
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      text-align: right;
+      font-weight: 500;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .share-button {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(99% - 60px);
+      max-width: 560px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    .copy-icon {
+      cursor: pointer;
+      color: var(--text-secondary);
+      width: 16px;
+      height: 16px;
+    }
+
+    .arrow-left {
+      width: 20px;
+      height: 20px;
+    }
+
+    .chevron-right {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+    }
+
+    .more-actions-card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      margin: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .more-actions-image {
+      position: relative;
+      right: 5%;
+      width: 110%;
+      height: auto;
+      display: block;
+    }
+"""
+
+OPAY_SENDER_BANKS = [
+    ("Wema Bank PLC",  "https://s3-symbol-logo.tradingview.com/wema-bank-plc--600.png"),
+    ("PAYSTACK-TITAN", "https://i.ibb.co/fLkMFXr/paystack-logo-modified.png"),
+]
+
+OPAY_THEME_ASSETS = {
+    "light": ("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/supporticon.jpg-BCuk3oRE5B07QPx3cONHOcHLyif9Oz.jpeg",
+              "https://i.postimg.cc/BZTf0VKX/new-light.jpg"),
+    "dark":  ("https://i.postimg.cc/Z5YP2Xhy/darl-re-icon.jpg",
+              "https://i.postimg.cc/PfFfDRt2/more-action-2.jpg"),
+}
+
+
+def fmt_opay_date(tx: datetime) -> str:
+    day = tx.day
+    suffix = "th" if 3 < day < 21 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+    return f"{tx.strftime('%b')} {day}{suffix}, {tx.year} {tx.strftime('%H:%M:%S')}"
+
+
+def tpl_opay(receiver: str, amount: int, tx: datetime, theme: str = "light") -> str:
+    sender_name = "DAIMORAX"
+    bank_name, bank_logo = random.choice(OPAY_SENDER_BANKS)
+    support_icon, more_actions = OPAY_THEME_ASSETS[theme]
+    transaction_no = "25100206010050" + rand_digits(12)
+    session_id = "000017250419001303" + rand_digits(12)
+    return f"""<!DOCTYPE html>
+<html lang="en" data-theme="{theme}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPay Receipt</title>
+  <style>{OPAY_CSS}</style>
+</head>
+<body>
+  <div class="opay-container">
+    <div class="header">
+      <div class="back-button">
+        <svg class="arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        Transaction Details
+      </div>
+      <div class="support-icon">
+        <img src="{support_icon}" alt="Support">
+      </div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="receipt-card main-card">
+          <div class="bank-logo">
+            <img src="{bank_logo}" alt="Bank Logo">
+          </div>
+
+          <div class="transaction-main">
+            <div class="transfer-from">Transfer from {sender_name}</div>
+            <div class="amount">₦{fmt_ngn(amount)}</div>
+            <div class="status">
+              <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+                <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="currentColor"></path>
+              </svg>
+              Successful
+            </div>
+          </div>
+        </div>
+
+        <div class="receipt-card">
+          <div class="details-title">Transaction Details</div>
+
+          <div class="detail-row">
+            <div class="detail-label">Credited to</div>
+            <div class="detail-value">
+              Available Balance
+              <svg class="chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Sender Details</div>
+            <div class="detail-value">
+              {sender_name}<br>{bank_name} | 042****101
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Remark</div>
+            <div class="detail-value">Transfer to {receiver}</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Transaction Type</div>
+            <div class="detail-value">Bank Deposit</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Transaction No.</div>
+            <div class="detail-value">
+              <span style="filter: blur(4px); display: inline-block; user-select: none;">{transaction_no}</span>
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Transaction Date</div>
+            <div class="detail-value">{fmt_opay_date(tx)}</div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Session ID</div>
+            <div class="detail-value">
+              <span style="filter: blur(4px); display: inline-block; user-select: none;">{session_id}</span>
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="more-actions-card">
+          <img src="{more_actions}" alt="More Actions" class="more-actions-image">
+        </div>
+
+        <button class="share-button">Share Receipt</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>"""
+
+
+def tpl_opay_any(receiver: str, amount: int, tx: datetime) -> str:
+    """OPay counts as one template; the light/dark theme is picked 50/50 here."""
+    theme = random.choice(["light", "dark"])
+    logger.info(f"🎨 OPay theme: {theme.title()}")
+    return tpl_opay(receiver, amount, tx, theme=theme)
+
+
+ZENITH_CSS = """
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .receipt-container {
+            display: block;
+            background: #F5F5F5;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 23px;
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .success-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .success-icon {
+            width: 65px;
+            height: 65px;
+            background: #61d08f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-icon i {
+            font-size: 40px;
+            font-weight: 900;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+
+        .receipt-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .watermark {
+            position: absolute;
+            top: 73%;
+            left: 60%;
+            transform: translate(-50%, -50%);
+            opacity: 0.07;
+            width: 350px;
+            height: 350px;
+            pointer-events: none;
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .receipt-header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            letter-spacing: -0.3px;
+        }
+
+        .zenith-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .receipt-label {
+            color: #666;
+            font-size: 17px;
+            font-weight: 600;
+            flex-shrink: 0;
+            letter-spacing: -0.1px;
+        }
+
+        .receipt-value {
+            color: #000;
+            font-size: 18px;
+            font-weight: 900;
+            text-align: right;
+            word-break: break-word;
+            margin-left: 16px;
+            letter-spacing: -0.2px;
+        }
+
+        .receipt-value.amount {
+            font-size: 20px;
+            font-weight: 550;
+        }
+
+        .receipt-value.account-info {
+            font-size: 13px;
+        }
+
+        .receipt-value.small {
+            font-size: 17px;
+        }
+
+        .dotted-line {
+            border-bottom: 1px dashed #E0E0E0;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .transaction-id-section {
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .receipt-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .share-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 14px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        .download-btn {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border: 2px solid #E0E0E0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .download-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+"""
+
+ZENITH_SENDER_BANKS = ["Opay", "Moniepoint MFB", "PalmPay", "Kuda MFB"]
+
+
+def tpl_zenith(receiver: str, amount: int, tx: datetime) -> str:
+    sender_name = "DAIMORAX"
+    sender_bank = random.choice(ZENITH_SENDER_BANKS)
+    sender_acct = f"{random.choice(['7', '8', '9'])}{rand_digits(3)}****{rand_digits(2)}"
+    to_account = "0" + rand_digits(9)
+    txn_id = f"2221{rand_digits(17)}<br>{rand_digits(12)}"
+    date_str = f"{tx.strftime('%d-%m-%Y')}<br>{tx.strftime('%H:%M:%S')}"
+    logo = "https://i.postimg.cc/g2c3CGsd/zenith-logo.webp"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Bank Receipt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>{ZENITH_CSS}</style>
+</head>
+<body>
+    <div class="receipt-container">
+        <button class="back-button">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="success-section">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="success-title">Payment Successful</div>
+        </div>
+
+        <div class="receipt-card">
+            <img src="{logo}" alt="Zenith Logo" class="watermark">
+
+            <div class="receipt-header">
+                <div class="receipt-header-title">Transaction Receipt</div>
+                <img src="{logo}" alt="Zenith Logo" class="zenith-logo">
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">Amount</div>
+                <div class="receipt-value amount">₦ {fmt_ngn(amount)}</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">From</div>
+                <div class="receipt-value">
+                    <div>{sender_name}</div>
+                    <div class="account-info">{sender_acct} ({sender_bank})</div>
+                </div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">To</div>
+                <div class="receipt-value"><span style="filter: blur(4px); display: inline-block; white-space: nowrap; user-select: none;">{to_account}</span></div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">Transaction Type</div>
+                <div class="receipt-value">NIP/Direct Credit</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">Date</div>
+                <div class="receipt-value">{date_str}</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">Description</div>
+                <div class="receipt-value">Transfer from {sender_name} to {receiver}</div>
+            </div>
+
+            <div class="dotted-line"></div>
+
+            <div class="transaction-id-section">
+                <div class="receipt-row">
+                    <div class="receipt-label">Transaction ID</div>
+                    <div class="receipt-value small"><span style="filter: blur(4px); display: inline-block; user-select: none;">{txn_id}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="receipt-buttons">
+            <button class="share-btn">
+                Share Receipt
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
+            <button class="download-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
 TEMPLATES = [
     ("UBA Classic",       tpl_uba1),
     ("UBA Modern",        tpl_uba2),
@@ -2384,13 +3072,15 @@ TEMPLATES = [
     ("Sterling Bank",     tpl_sterling),
     ("ALAT",              tpl_alat),
     ("Moniepoint",        tpl_moniepoint),
+    ("OPay",              tpl_opay_any),
+    ("Zenith Bank",       tpl_zenith),
 ]
 
 # Crypto templates: no DaimoraX bank-withdrawal page, USDT caption without a name.
 CRYPTO_TEMPLATES = {"Roqqu", "Roqqu App", "Binance"}
 
 
-# ══════════════════════════════════════════���═════════════════════
+# ══════════════════════════════════════════���══════���══════════════
 # PLAYWRIGHT RENDERER
 # ════════════════════════════════════════════════════════════════
 def get_chromium_path():
@@ -2505,7 +3195,16 @@ async def scan_history(bot: Bot):
 # ══════════════════��══════════════════════════════════════════  ══
 # POSTER
 # ══════════════════════════════════════════���═════════════════════
-async def post_to_all_channels(bot: Bot):
+def find_template(name: str):
+    """Look up a template by name, ignoring case and spaces (e.g. 'opay', 'roqqu app')."""
+    key = name.replace(" ", "").lower()
+    for tpl in TEMPLATES:
+        if tpl[0].replace(" ", "").lower() == key:
+            return tpl
+    return None
+
+
+async def post_to_all_channels(bot: Bot, forced_template=None):
     if not known_channels:
         logger.warning("⚠️  No channels found. Make the bot admin in a channel and send a message there.")
         return
@@ -2515,7 +3214,7 @@ async def post_to_all_channels(bot: Bot):
     amount   = random_amount()
     receiver = random_name()
 
-    tpl_name, tpl_fn = random.choice(TEMPLATES)
+    tpl_name, tpl_fn = forced_template or random.choice(TEMPLATES)
     logger.info(f"🎲 Template: {tpl_name} | ₦{amount:,} → {receiver}")
 
     # Shared recipient account for receipts that show it, so the DaimoraX
@@ -2606,5 +3305,33 @@ async def main():
     await scheduler(bot)
 
 
+async def post_once(template_name: str):
+    """Post a single receipt using the named template, then exit."""
+    tpl = find_template(template_name)
+    if tpl is None:
+        names = ", ".join(t[0] for t in TEMPLATES)
+        print(f"Unknown template '{template_name}'. Available: {names}")
+        return
+
+    app = Application.builder().token(BOT_TOKEN).build()
+    await app.initialize()
+    try:
+        await scan_history(app.bot)
+        await post_to_all_channels(app.bot, forced_template=tpl)
+    finally:
+        await app.shutdown()
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    import sys
+    args = sys.argv[1:]
+    if args and args[0] == "--list":
+        for t in TEMPLATES:
+            print(t[0])
+    elif args and args[0] == "--once":
+        if len(args) < 2:
+            print('Usage: python test_bot.py --once "Template Name"')
+        else:
+            asyncio.run(post_once(" ".join(args[1:])))
+    else:
+        asyncio.run(main())
